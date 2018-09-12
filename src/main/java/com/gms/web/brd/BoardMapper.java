@@ -1,11 +1,9 @@
-package com.gms.web.mapper;
+package com.gms.web.brd;
 
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
-
-import com.gms.web.brd.Article;
 @Repository
 public interface BoardMapper {
 	public void insert(Article p);

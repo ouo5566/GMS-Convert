@@ -62,11 +62,11 @@
 	 <!-- 간소화된 설정법 -->
 	 <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
 	 	<property name="dataSource" ref="dataSource"/>
-	 	<property name="mapperLocations" value="classpath:com/gms/web/*Mapper.xml"/>
+	 	<property name="mapperLocations" value="classpath:com/gms/web/**/*Mapper.xml"/>
 	 </bean>
 	 <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg ref="sqlSessionFactoryBean"/>
 	 </bean>
-	 <mybatis-spring:scan base-package="com.gms.web.mapper"/>
+	 <mybatis-spring:scan base-package="com.gms.web"/>
 		
 </beans>

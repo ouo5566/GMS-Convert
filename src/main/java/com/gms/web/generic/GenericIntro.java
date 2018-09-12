@@ -1,21 +1,37 @@
 package com.gms.web.generic;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GenericIntro {
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) {
+		System.out.println("[1]");
+		Item<String> itName = new Item<>();
+		itName.setOne("GalaxyNote");
+		Item<Integer> itVers = new Item<>();
+		itVers.setOne(9);
+		System.out.println("Samsung new phone name is :: "+ itName.getOne() + itVers.getOne());
 		
-	}
-	class Box<T>{
-		T item;
-
-		public T getItem() {
-			return item;
-		}
-
-		public void setItem(T item) {
-			this.item = item;
-		}
+		System.out.println("[2]");
+		Item<List<String>> it = new Item<>();
+		it.setSome(
+				Arrays.asList( new String[] {"Hello", "World", "Generic"} )
+				);
+		System.out.println(it.getSome());
+		
+		System.out.println("[3]");
+		FruitBox<Fruit> fbox = new FruitBox<>();
+		FruitBox<Apple> abox = new FruitBox<>();
+		fbox.add(new Apple());
+		fbox.add(new Grape());
+		abox.add(new Apple());
+		abox.add(new Apple());
+		System.out.println(new Mixer().makeJuice(fbox));
+		System.out.println(new Mixer().makeJuice(abox));
 	}
 }
+
 
 /*
 Generic : Type 을 생성한다.

@@ -88,7 +88,6 @@ public class MemberCtrl {
 						: "auth:member/login.tiles" ;
 		}
 		
-		
 		this.member = (Predicate.isEqual("login_success").test(view))?
 				memberMapper.selectOne(member) 
 					: new Member();

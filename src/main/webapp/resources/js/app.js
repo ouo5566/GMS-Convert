@@ -75,32 +75,10 @@ app = {
 		},
 		setContentView : ()=>{
 			console.log('step 4'+app.j());
+			
 		}
 };
-app.session = {
-		context : x=>{
-			console.log('step 2'+x);
-			sessionStorage.setItem('context', x);
-			sessionStorage.setItem('js', x+'/resources/js');
-			sessionStorage.setItem('css', x+'/resources/css');
-			sessionStorage.setItem('img', x+'/resources/img');
-		},
-		getItem : x=>{
-			return sessionStorage.getItem(x);
-		}
-}
-app.x = ()=>{
-	return app.session.getItem('context');
-}
-app.j = ()=>{
-	return app.session.getItem('js');
-}
-app.c = ()=>{
-	return app.session.getItem('css');
-}
-app.i = ()=>{
-	return app.session.getItem('img');
-}
+
 
 user.session = x =>{
 	var s = '';

@@ -8,18 +8,16 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.gms.web.cmm.Util;
 
-@Controller
-@RequestMapping("/member")
-@SessionAttributes("user")
+@RestController
 public class MemberCtrl {
 	static final Logger logger = LoggerFactory.getLogger(MemberCtrl.class);
 	@Autowired MemberService memberService;
@@ -53,7 +51,6 @@ public class MemberCtrl {
 	public String retrieve(Model model, @ModelAttribute("user") Member user) {
 		if(user.getMemberId() != null){
 			member.setMemberId(user.getMemberId());
-			model.addAttribute("user", memberService.retrieve(member));
 			return "login:member/retrieve.tiles";
 		}
 		return "main";
@@ -70,10 +67,9 @@ public class MemberCtrl {
 	public String remove(HttpSession session, @ModelAttribute("user") Member user) {
 		logger.info("remove()");
 		memberService.remove(user);
-		session.removeAttribute("user");
 		return "redirect:/";
 	}
-	@RequestMapping(value="/login", method=RequestMethod.POST)
+	@PostMapping("/login")
 	public String login(Model model
 			, @ModelAttribute("member") Member member) {
 		logger.info("login()");
@@ -107,7 +103,6 @@ public class MemberCtrl {
 	@RequestMapping("/logout")
 	public String logout(HttpSession session) {
 		logger.info("logout()");
-		session.removeAttribute("user");
 		return "redirect:/";
 	}
 }

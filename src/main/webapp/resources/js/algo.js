@@ -15,17 +15,18 @@ algo = {
 } // 호출하면 만들어진다. 
 
 algo.main = (()=>{
-	var $wrapper, ctx, img, script, style, compo, json;
+	var $wrapper, ctx, img, script, style, compo, json, $td1, $td2;
 	var onCreate = ()=>{
 		ctx = $.ctx();
 		img = $.img();
 		script = $.script();
 		style = $.style();
-		compo = script='/compo.js'
+		compo = script+'/compo.js'
 		setContentView();
 	};
 	var setContentView = ()=>{
-		$('#wrapper').html('<h1> ALGORITHM </h1>'
+		$('#wrapper')
+		.html('<h1> ALGORITHM </h1>'
 				+ '<a href="#"><span id="seq"> 수열 </span></a>'
 				+ '<a href="#"><span id="appl"> 응용 </span></a>'
 				+ '<div id="ctn"></div>'); // 오버라이딩
@@ -36,21 +37,22 @@ algo.main = (()=>{
 				+ '<td id="td1" style="width:50%; border:1px solid black;"></td>'
 				+ '<td id="td2" style="width:50%; border:1px solid black;"></td>'
 				+ '</tr></table>');
-		let $td1 = $('#td1');
-		let $td2 = $('#td2');
-		$('<ul />')
-		.attr({id : 'side_menu'})
-		.addClass('list_group')
-		.appendTo($td1);
+		$td1 = $('#td1');
+		$td2 = $('#td2');
+		
 		
 		$('#seq').click(e=>{
+			$td1.empty();
+			$td2.empty();
 			
+			$('<ul />')
+			.attr({id : 'side_menu'})
+			.addClass('list-group')
+			.appendTo($td1);
 			$('<li/>')
 			.attr({id : 'arith'})
 			.addClass('list-group-item')
 			.appendTo($('#side_menu'));
-			
-			
 			$('<a/>')
 			.attr({href : '#'})
 			.html('등차수열의 합')
@@ -276,7 +278,67 @@ algo.main = (()=>{
 		});
 		
 		$('#appl').click(e=>{
+			$td1.empty();
+			$td2.empty();
 			
+			$.getScript(compo, ()=>{
+				ui.ul({len : 3, id:'menu'}).appendTo($td1);
+				ui.anchor({txt:'화폐(compo)'})
+				.appendTo($('#menu-0'))
+				.click(e=>{
+					$td2.empty();
+					$('<h6/>').html('화폐문제').appendTo($td2);
+					ui.input({id: 'money' , txt : '금액' , lab_txt : 'Money'})
+					.appendTo($td2);
+				});
+			})
+			
+			$('<ul/>')
+			.attr({id:'side_menu'})
+			.addClass('list-group').appendTo($td1);
+			$('<li/>')
+			.attr({id:'currency'})
+			.addClass('list-group-item')
+			.appendTo($('#side_menu'));
+			$('<a/>')
+			.attr({href:'#'})
+			.html('화폐문제')
+			.appendTo($('#currency'))
+			.click(e=>{
+				$('#ques').remove();
+				$('<div/>')
+				.attr({id : 'ques'})
+				.appendTo($td2);
+				$('<h3/>')
+				.html('액수 x를 화폐단위별로 얼마나 필요한지 구하시오.')
+				.appendTo($('#ques'));
+				$('<label/>')
+				.html('금액')
+				.appendTo($('#ques'));
+				$('<input/>')
+				.attr({id:'money', type:'text'})
+				.appendTo($('#ques'));
+				$('<br/>')
+				.appendTo($('#ques'));
+				$('<button/>')
+				.addClass('btn btn-primary')
+				.html('결과보기')
+				.appendTo($('#ques'))
+				.click(e=>{
+					$('#r').remove();
+					let money = $('#money').val() * 1;
+					$('<h3/>')
+					.attr({id : 'r'}).appendTo($('#ques'));
+					$('#r').text(
+							($.fn.zeroChecker([money]))?
+									'빈칸을 채우시오':'실행'
+					);
+					if($('#r').text() === '실행'){
+						console.log('java gogo');
+					}
+				});
+				
+			});
 		});		
 		
 	}

@@ -18,7 +18,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 	
-		<mvc:annotation-driven />
+	<mvc:annotation-driven />
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 	
 	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">

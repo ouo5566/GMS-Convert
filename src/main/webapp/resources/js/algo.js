@@ -288,57 +288,29 @@ algo.main = (()=>{
 				.click(e=>{
 					$td2.empty();
 					$('<h6/>').html('화폐문제').appendTo($td2);
-					ui.input({id: 'money' , txt : '금액' , lab_txt : 'Money'})
+					ui.input({id: 'money' , txt : '금액' , ph_txt : 'Money'})
 					.appendTo($td2);
+					ui.btn({txt : '결과보기', clazz : 'primary'})
+					.appendTo($td2)
+					.click(e=>{
+						alert($('#money').val() + ' 입력 !');
+						$.ajax({
+							url : ctx + '/algo/money',
+							method : 'post',
+							contentType : 'application/json',
+							data : JSON.stringify({ money : $('#money').val()}),
+							success : d=>{
+								console.log('AJAX SUCCESS, ' + d.test);
+							},
+							error : (m1,m2,m3)=>{
+								console.log('1. 에러발생 : '+ m1);
+								console.log('2. 에러발생 : '+ m2);
+								console.log('3. 에러발생 : '+ m3);
+							}
+						});
+					});
 				});
 			})
-			
-			$('<ul/>')
-			.attr({id:'side_menu'})
-			.addClass('list-group').appendTo($td1);
-			$('<li/>')
-			.attr({id:'currency'})
-			.addClass('list-group-item')
-			.appendTo($('#side_menu'));
-			$('<a/>')
-			.attr({href:'#'})
-			.html('화폐문제')
-			.appendTo($('#currency'))
-			.click(e=>{
-				$('#ques').remove();
-				$('<div/>')
-				.attr({id : 'ques'})
-				.appendTo($td2);
-				$('<h3/>')
-				.html('액수 x를 화폐단위별로 얼마나 필요한지 구하시오.')
-				.appendTo($('#ques'));
-				$('<label/>')
-				.html('금액')
-				.appendTo($('#ques'));
-				$('<input/>')
-				.attr({id:'money', type:'text'})
-				.appendTo($('#ques'));
-				$('<br/>')
-				.appendTo($('#ques'));
-				$('<button/>')
-				.addClass('btn btn-primary')
-				.html('결과보기')
-				.appendTo($('#ques'))
-				.click(e=>{
-					$('#r').remove();
-					let money = $('#money').val() * 1;
-					$('<h3/>')
-					.attr({id : 'r'}).appendTo($('#ques'));
-					$('#r').text(
-							($.fn.zeroChecker([money]))?
-									'빈칸을 채우시오':'실행'
-					);
-					if($('#r').text() === '실행'){
-						console.log('java gogo');
-					}
-				});
-				
-			});
 		});		
 		
 	}

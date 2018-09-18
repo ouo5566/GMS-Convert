@@ -14,9 +14,9 @@ var ui = {
 				.addClass('input-group mb-3')
 				.append(ui.div({})
 						.addClass('input-group-prepend')
-						.append($('<span/>').addClass('input-group-text').attr({id : 'basic-addon1'}).text(x.txt))
+						.append($('<span/>').addClass('input-group-text').attr({id : 'input_lab'}).text(x.txt))
 				).append($('<input/>')
-						.attr({id : x.id, type : 'text', placeholder: x.lab_txt , 'aria-label': x.lab_txt , 'aria-describedby' : 'basic-addon1'})
+						.attr({id : x.id, type : 'text', placeholder: x.ph_txt , 'aria-label': x.ph_txt , 'aria-describedby' : 'input_lab'})
 						.addClass('form-control'));
 	},
 	input2 : x=>{
@@ -56,7 +56,7 @@ var ui = {
 	},
 	btn : x=>{
 		return $('<button/>')
-				.attr('type','button')
+				.attr({type : 'button', id : x.id})
 				.addClass('btn btn-'+x.clazz)
 				.html(x.txt);
 	}

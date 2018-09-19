@@ -111,40 +111,17 @@ app.main=(()=>{
 	};
 	var setContentView =()=>{
 		console.log('step 2');
-		
+		app.router.home();
 /*		$.getScript(header,()=>{
 			w.html(headerUI());
 		})	
 */
-		$.when(
-				$.getScript(script+'/header.js'),
-				$.getScript(script+'/content.js'),
-				$.getScript(script+'/footer.js'),
-				$.Deferred(x=>{
-					$(x.resolve);
-					console.log('step 3');
-				})
-		).done(x=>{
-			console.log('step 4');
-			w.html(headerUI()
-					+ contentUI()
-					+ footerUI());
-			$('#login_btn').click(e=>{
-				app.permission.login();
-			})
-			$('#add_btn').click(e=>{
-				app.permission.add();
-			})
-			$('#board_btn').click(e=>{
-				app.board.init();
-			})
-			}
-		).fail(x=>{console.log('step 4 실패')})
+		
 	};
 	return {init:init};
 })();
 app.board = (()=>{
-	var w, header, footer, content, ctx, script, style, img;
+	var header, footer, content, ctx, script, style, img;
 	var init=()=>{
 		onCreate();
 	};
@@ -166,26 +143,32 @@ app.permission = (()=>{
 			.html('LOGIN')
 			.appendTo($('#login-box'))
 			.click(e=>{
-				$.ajax({
-					url : $.ctx()+'/mbr/login',
-					method : 'post',
-					contentType : 'application/json',
-					data : JSON.stringify({ memberId : $('#memberId').val(), pw : $('#pw').val()}),
-					success : d=>{
-						$('#msg').remove();
-						$('<p/>').attr('id','msg').html(d.flag).appendTo($('#login-box'));
-						if(d.flag === 'login_success'){
-							$('#content').empty();
-							$('#mySidenav').empty();
-							$('<a/>').attr({href:"#"}).html('Logout').appendTo($('#mySidenav')).click(e=>{});
-							$('<a/>').attr({href:"#"}).html('Retrieve').appendTo($('#mySidenav')).click(e=>{});
-							$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
-							$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
-							$('<a/>').attr({href:"#"}).html('Board').appendTo($('#mySidenav')).click(e=>{});
-						}
-					},
-					error : (x,y,z)=>{console.log('error :: '+z)}
-				});
+				if(!$.fn.nullChecker([$('#memberId').val(), $('#pw').val()])){
+					$.ajax({
+						url : $.ctx()+'/mbr/login',
+						method : 'post',
+						contentType : 'application/json',
+						data : JSON.stringify({ memberId : $('#memberId').val(), pw : $('#pw').val()}),
+						success : d=>{
+							$('#msg').remove();
+							
+							$('<p/>').attr('id','msg').html(d.flag).appendTo($('#login-box'));
+							
+							if(d.flag === 'login_success'){
+								$('#content').empty();
+								$('#mySidenav').empty();
+								$('<a/>').attr({href:"#"}).html('Logout').appendTo($('#mySidenav')).click(e=>{
+									app.router.home();
+								});
+								$('<a/>').attr({href:"#"}).html('Retrieve').appendTo($('#mySidenav')).click(e=>{});
+								$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
+								$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
+								$('<a/>').attr({href:"#"}).html('Board').appendTo($('#mySidenav')).click(e=>{});
+							}
+						},
+						error : (x,y,z)=>{console.log('error :: '+z)}
+					});
+				}
 			});
 		});
 	};
@@ -238,5 +221,30 @@ app.router = {
 						app.main.init();
 					}
 				); // 외부의 js파일 호출, import 느낌
+		},
+		home : ()=>{
+			$.when(
+					$.getScript($.script()+'/header.js'),
+					$.getScript($.script()+'/content.js'),
+					$.getScript($.script()+'/footer.js'),
+					$.Deferred(x=>{
+						$(x.resolve);
+						console.log('step 3');
+					})
+			).done(x=>{
+				console.log('step 4');
+				$('#wrapper').html(headerUI()
+						+ contentUI()
+						+ footerUI());
+				$('#login_btn').click(e=>{
+					app.permission.login();
+				})
+				$('#add_btn').click(e=>{
+					app.permission.add();
+				})
+				$('#board_btn').click(e=>{
+					app.board.init();
+				})
+			}).fail(x=>{console.log('step 4 실패')})
 		}
 	};

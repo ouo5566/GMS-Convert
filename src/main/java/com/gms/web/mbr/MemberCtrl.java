@@ -80,7 +80,7 @@ public class MemberCtrl {
 		
 		String flag = "ID WRONG";
 		if(memberMapper.count(member) != 0) {
-			Function<Member, Member> f = t -> memberMapper.get(t);
+			Function<Member, Member> f = m -> memberMapper.get(m);
 			mbr = f.apply(member);
 			flag = (mbr != null) ?
 					"login_success"

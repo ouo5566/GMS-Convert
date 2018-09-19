@@ -9,5 +9,5 @@ function Session(x){
 		script : () => {return sessionStorage.getItem('script');},
 		style : () => {return sessionStorage.getItem('style');},
 		img : () => {return sessionStorage.getItem('img');}
-	}
+	};
 }

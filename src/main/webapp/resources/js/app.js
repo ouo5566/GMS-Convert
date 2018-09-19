@@ -132,6 +132,9 @@ app.main=(()=>{
 			$('#login_btn').click(e=>{
 				app.permission.login();
 			})
+			$('#add_btn').click(e=>{
+				app.permission.add();
+			})
 			$('#board_btn').click(e=>{
 				app.board.init();
 			})
@@ -157,16 +160,69 @@ app.board = (()=>{
 app.permission = (()=>{
 	var login =x=>{
 		console.log('LOGIN');
-		$('#content').empty();
-		$.getScript($.script()+'/login.js')
-		.done(()=>{
+		$.getScript($.script()+'/login.js',()=>{
 			$('#content').html(loginUI());
-		})
-		.fail(()=>{console.log('login.js getScript fail')});
-		
+			$('<button/>')
+			.html('LOGIN')
+			.appendTo($('#login-box'))
+			.click(e=>{
+				$.ajax({
+					url : $.ctx()+'/mbr/login',
+					method : 'post',
+					contentType : 'application/json',
+					data : JSON.stringify({ memberId : $('#memberId').val(), pw : $('#pw').val()}),
+					success : d=>{
+						$('#msg').remove();
+						$('<p/>').attr('id','msg').html(d.flag).appendTo($('#login-box'));
+						if(d.flag === 'login_success'){
+							$('#content').empty();
+							$('#mySidenav').empty();
+							$('<a/>').attr({href:"#"}).html('Logout').appendTo($('#mySidenav')).click(e=>{});
+							$('<a/>').attr({href:"#"}).html('Retrieve').appendTo($('#mySidenav')).click(e=>{});
+							$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
+							$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
+							$('<a/>').attr({href:"#"}).html('Board').appendTo($('#mySidenav')).click(e=>{});
+						}
+					},
+					error : (x,y,z)=>{console.log('error :: '+z)}
+				});
+			});
+		});
 	};
-	return{login:login};
-	
+	var add =()=>{
+		console.log('ADD');
+		$.getScript($.script()+'/add.js', ()=>{
+			$('#content').html(addUI());
+			//+'	<input id="add_form_btn" type="button" value="JOIN" />'
+			$('<button/>')
+			.html('JOIN')
+			.appendTo($('#add-box'))
+			.click(e=>{
+				console.log($('[name=teamId]:checked').val());
+				console.log($('[name=subject]:checked').length);
+				$.ajax({
+					url:$.ctx()+'/mbr/add',
+					method:'post',
+					contentType:'application/json',
+					data:JSON.stringify({
+						memberId:$('#memberId').val(),
+						pw:$('#pw').val(),
+						name:$('#name').val(),
+						ssn:$('#ssn').val(),
+						teamId:$('[name=teamId]:checked').val(),
+						roll:$('#roll').val(),
+						subject:''
+							}),
+					success:d=>{console.log('JOIN SUCCESS :: '+d.memberId)},
+					error:(x,y,z)=>{console.log('error :: '+z)}
+				});
+			});
+		})
+	};
+	return{
+		login:login,
+		add:add
+		};
 })();
 
 app.router = {

@@ -1,5 +1,7 @@
 package com.gms.web.mbr;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -11,23 +13,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gms.web.cmm.Util;
+import com.gms.web.cmm.*;
 
 @RestController
+@RequestMapping("/mbr")
 public class MemberCtrl {
 	static final Logger logger = LoggerFactory.getLogger(MemberCtrl.class);
-	@Autowired MemberService memberService;
-	@Autowired Member member;
+	@Autowired Member mbr;
 	@Autowired MemberMapper memberMapper;
-	@RequestMapping(value="/add", method=RequestMethod.POST)
-	public String add(@ModelAttribute("member") Member member) {
-		logger.info("add()");
-		memberService.add(member);
-		return "auth:member/login.tiles";
+	@PostMapping("/add")
+	public @ResponseBody Map<String, Object> add(@RequestBody Member p) {
+		Util.logger.accept("add() :: 넘어온 정보 :: "+p);
+		Map<String, Object> r = new HashMap<>();
+		Once.getAnG.apply(p);
+		Util.logger.accept(p.getAge()+"/"+p.getGender());
+		return r;
 	}
 /*	
 	@RequestMapping("/list")
@@ -50,7 +56,7 @@ public class MemberCtrl {
 	@RequestMapping("/retrieve")
 	public String retrieve(Model model, @ModelAttribute("user") Member user) {
 		if(user.getMemberId() != null){
-			member.setMemberId(user.getMemberId());
+			mbr.setMemberId(user.getMemberId());
 			return "login:member/retrieve.tiles";
 		}
 		return "main";
@@ -59,36 +65,32 @@ public class MemberCtrl {
 	public String modify(@ModelAttribute("member") Member member, @ModelAttribute("user") Member user) {
 		logger.info("modify()");
 		member.setMemberId(user.getMemberId());
-		memberService.modify(member);
-		user = memberService.retrieve(member);
 		return "login:member/retrieve.tiles";
 	}
 	@RequestMapping("/remove")
 	public String remove(HttpSession session, @ModelAttribute("user") Member user) {
 		logger.info("remove()");
-		memberService.remove(user);
 		return "redirect:/";
 	}
 	@PostMapping("/login")
-	public String login(Model model
-			, @ModelAttribute("member") Member member) {
-		logger.info("login()");
-		String view = "auth:member/login.tiles";
+	public @ResponseBody Map<String, Object> login(@RequestBody Member member) {
+		Map<String, Object> r = new HashMap<>();
+		Util.logger.accept("login() :: 넘어온 로그인 정보 :: "+member.getMemberId()+"/"+member.getPw());
 		// Predicate<String> p = s -> !s.equals("") ;
-		Predicate<String> p = s -> s.equals("");
-		Predicate<String> notP = p.negate();
-		if(notP.test(memberMapper.exist(member.getMemberId()))) {
-			Function<Member, Member> f = t -> memberMapper.selectOne(t);
-			view = (f.apply(member) != null) ?
+		
+		String flag = "ID WRONG";
+		if(memberMapper.count(member) != 0) {
+			Function<Member, Member> f = t -> memberMapper.get(t);
+			mbr = f.apply(member);
+			flag = (mbr != null) ?
 					"login_success"
-						: "auth:member/login.tiles" ;
+						: "PW WRONG" ;
+			mbr = (Predicate.isEqual("login_success").test(flag))?
+					mbr : new Member();
 		}
-		
-		this.member = (Predicate.isEqual("login_success").test(view))?
-				memberMapper.selectOne(member) 
-					: new Member();
-		
-		Util.logger.accept(this.member.toString());
+		Util.logger.accept(flag);
+		r.put("flag", flag);
+		r.put("member", mbr);
 		
 		/*
 		Predicate<String> l = s -> s.equals("login_success");
@@ -98,7 +100,7 @@ public class MemberCtrl {
 		}
 		*/
 		
-		return view ;
+		return r ;
 	}
 	@RequestMapping("/logout")
 	public String logout(HttpSession session) {

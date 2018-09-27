@@ -91,7 +91,7 @@ user.session = x =>{
 app =(()=>{
 	var init =x=>{
 		//변수 초기화
-		console.log('step 1');
+		//console.log('step 1');
 		app.router.init(x);
 	};
 	return{init:init};
@@ -110,7 +110,7 @@ app.main=(()=>{
 		setContentView(); //화면구성(이벤트 걸기 전)
 	};
 	var setContentView =()=>{
-		console.log('step 2');
+		//console.log('step 2');
 		app.router.home();
 /*		$.getScript(header,()=>{
 			w.html(headerUI());
@@ -123,6 +123,10 @@ app.main=(()=>{
 app.board = (()=>{
 	var header, footer, content, ctx, script, style, img;
 	var init=()=>{
+		ctx = $.ctx();
+		script = $.script();
+		style = $.style();
+		img = $.img();
 		onCreate();
 	};
 	var onCreate=()=>{
@@ -131,75 +135,116 @@ app.board = (()=>{
 	var setContentView=()=>{
 		// list
 		$('#content').empty();
+		$.getJSON(ctx+'/boards/1',d=>{
+			$.getScript(script+'/compo.js',()=>{
+				// no, 제목, 내용, 작성자, 조회수
+				ui.tbl({
+					type : 'warning',
+					id : 'table',
+					clazz : 'table table-bordered',
+					head : 'PANEL-HEADING',
+					body : 'PANEL-BODY',
+					list : ['NO.', '제목', '내용', '작성자', '작성일', '조회수']
+				})
+				.appendTo($('#content'));
+				
+				$.each(d, (i, j)=>{
+					$('<tr/>')
+					.append(
+						$('<td/>').attr('width','5%').html(j.bno),
+						$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
+						$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
+						$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
+						$('<td/>').attr('width','10%').html(j.regdate),
+						$('<td/>').attr('width','5%').html(j.viewcnt)
+					)
+					.appendTo($('tbody'));
+				});
+			});
+		});
 	};
 	return{init:init};
 })();
 app.permission = (()=>{
 	var login =x=>{
 		console.log('LOGIN');
-		$.getScript($.script()+'/login.js',()=>{
-			$('#content').html(loginUI());
-			$('<button/>')
-			.html('LOGIN')
-			.appendTo($('#login-box'))
-			.click(e=>{
-				if(!$.fn.nullChecker([$('#memberId').val(), $('#pw').val()])){
-					$.ajax({
-						url : $.ctx()+'/mbr/login',
-						method : 'post',
-						contentType : 'application/json',
-						data : JSON.stringify({ memberId : $('#memberId').val(), pw : $('#pw').val()}),
-						success : d=>{
-							$('#msg').remove();
-							
-							$('<p/>').attr('id','msg').html(d.flag).appendTo($('#login-box'));
-							
-							if(d.flag === 'login_success'){
-								$('#content').empty();
-								$('#mySidenav').empty();
-								$('<a/>').attr({href:"#"}).html('Logout').appendTo($('#mySidenav')).click(e=>{
-									app.router.home();
-								});
-								$('<a/>').attr({href:"#"}).html('Retrieve').appendTo($('#mySidenav')).click(e=>{});
-								$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
-								$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
-								$('<a/>').attr({href:"#"}).html('Board').appendTo($('#mySidenav')).click(e=>{});
-							}
-						},
-						error : (x,y,z)=>{console.log('error :: '+z)}
-					});
-				}
+		$.getScript($.script()+'/compo.js',()=>{
+			$.getScript($.script()+'/login.js',()=>{
+				$('#content').html(loginUI());
+				$('<nav/>').appendTo($('#login-box'));
+				ui.btn({txt : 'LOGIN', clazz : 'btn btn-secondary'})
+				.appendTo($('#login-box'))
+				.click(e=>{
+					if(!$.fn.nullChecker([$('#memberId').val(), $('#pw').val()])){
+						$.ajax({
+							url : $.ctx()+'/mbr/login',
+							method : 'post',
+							contentType : 'application/json',
+							data : JSON.stringify({ memberId : $('#memberId').val(), pw : $('#pw').val()}),
+							success : d=>{
+								$('#msg').remove();
+								$('<p/>').attr('id','msg').html(d.flag).appendTo($('#login-box'));
+								if(d.flag === 'login_success'){
+									$('#content').empty();
+									$('#mySidenav').empty();
+									$('<a/>').attr({href:"#"}).html('Logout').appendTo($('#mySidenav')).click(e=>{
+										app.router.home();
+									});
+									$('<a/>').attr({href:"#"}).html('Retrieve').appendTo($('#mySidenav')).click(e=>{});
+									$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
+									$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
+									$('<a/>').attr({href:"#"}).html('Board').appendTo($('#mySidenav')).click(e=>{});
+								}
+							},
+							error : (x,y,z)=>{console.log('error :: '+z)}
+						});
+					}
+				});
 			});
 		});
 	};
 	var add =()=>{
 		console.log('ADD');
-		$.getScript($.script()+'/add.js', ()=>{
-			$('#content').html(addUI());
-			//+'	<input id="add_form_btn" type="button" value="JOIN" />'
-			$('<button/>')
-			.html('JOIN')
-			.appendTo($('#add-box'))
-			.click(e=>{
-				console.log($('[name=teamId]:checked').val());
-				console.log($('[name=subject]:checked').length);
-				$.ajax({
-					url:$.ctx()+'/mbr/add',
-					method:'post',
-					contentType:'application/json',
-					data:JSON.stringify({
-						memberId:$('#memberId').val(),
-						pw:$('#pw').val(),
-						name:$('#name').val(),
-						ssn:$('#ssn').val(),
-						teamId:$('[name=teamId]:checked').val(),
-						roll:$('#roll').val(),
-						subject:''
-							}),
-					success:d=>{console.log('JOIN SUCCESS :: '+d.memberId)},
-					error:(x,y,z)=>{console.log('error :: '+z)}
+		$.getScript($.script()+'/compo.js',()=>{
+			$.getScript($.script()+'/add.js', ()=>{
+				$('#content').html(addUI());
+				/*
+				== change event == 
+				$('[name=subject]')
+				.change(function(){
+					console.log($(this).val());
 				});
-			});
+				*/
+				
+				ui.btn({txt : 'JOIN', clazz : 'btn btn-secondary'})
+				.appendTo($('#add-box'))
+				.click(e=>{
+					
+					let arr = [];
+					let ckSub = $('[name=subject]:checked');
+					for(let i of ckSub){
+						arr.push(i.value);
+					}
+					console.log("arr : " + arr);
+					
+					$.ajax({
+						url:$.ctx()+'/mbr/add',
+						method:'post',
+						contentType:'application/json',
+						data:JSON.stringify({
+							memberId:$('#memberId').val(),
+							pw:$('#pw').val(),
+							name:$('#name').val(),
+							ssn:$('#ssn').val(),
+							teamId:$('[name=teamId]:checked').val(),
+							roll:$('#roll').val(),
+							subject:JSON.stringify(arr)
+						}),
+						success:d=>{console.log('JOIN SUCCESS :: '+d.memberId)},
+						error:(x,y,z)=>{console.log('error :: '+z)}
+					});
+				});
+			})
 		})
 	};
 	return{
@@ -229,10 +274,10 @@ app.router = {
 					$.getScript($.script()+'/footer.js'),
 					$.Deferred(x=>{
 						$(x.resolve);
-						console.log('step 3');
+						//console.log('step 3');
 					})
 			).done(x=>{
-				console.log('step 4');
+				//console.log('step 4');
 				$('#wrapper').html(headerUI()
 						+ contentUI()
 						+ footerUI());

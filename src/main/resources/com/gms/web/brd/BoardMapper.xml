@@ -1,80 +1,86 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.gms.web.brd.BoardMapper">
 
-	<insert id="insert">
-		insert into tbl_board (title, content, writer)
+	<insert id="create">
+		insert into BOARD (title, content, writer)
 		values(#{title},#{content}, #{writer})
 	</insert>
 
-	<select id="selectOne" resultType="com.gms.web.brd.Article">
+	<select id="read" resultType="com.gms.web.brd.Board">
 		select
-		bno, title, content, writer, regdate, viewcnt
+		bno, title, content, writer,
+		regdate, viewcnt , replycnt
 		from
-		tbl_board
+		BOARD
 		where bno = #{bno}
 	</select>
 
+	<select id="listAll" resultType="com.gms.web.brd.Board">
+		SELECT *
+		FROM (
+			SELECT
+				ROW_NUMBER() OVER(ORDER BY BNO DESC) AS NUM,
+				A.*
+			FROM
+				BOARD A
+		)B
+		WHERE B.NUM BETWEEN #{beginRow} AND #{endRow}
+		ORDER BY B.NUM
+	</select>
+	<select id="listPage" resultType="com.gms.web.brd.Board">
+ <![CDATA[
+ select 
+   bno, title, content, writer, regdate, viewcnt , replycnt
+ from 
+   BOARD 
+ where bno > 0 
+ order by bno desc, regdate desc
+ limit #{page}, 10
+ ]]>
+	</select>
+
+	<select id="listCriteria" resultType="com.gms.web.brd.Board">
+ <![CDATA[
+ select 
+   bno, title, content, writer, regdate, viewcnt , replycnt
+ from 
+   BOARD 
+ where bno > 0 
+ order by bno desc, regdate desc
+ limit #{pageStart}, #{perPageNum}
+ ]]>
+	</select>
+
+
 	<update id="update">
-		update tbl_board set title =#{title}, content =#{content}
+		update BOARD set title =#{title}, content =#{content}
 		where bno = #{bno}
 	</update>
 
 	<delete id="delete">
-		delete from tbl_board where bno = #{bno}
+		delete from BOARD where bno = #{bno}
 	</delete>
-
-	<select id="selectList" resultType="com.gms.web.brd.Article">
-		 <![CDATA[
-		 select 
-		   bno, title, content, writer, regdate, viewcnt 
-		 from 
-		   tbl_board 
-		 where bno > 0 
-		 order by bno desc, regdate desc
-		 ]]>
-	</select>
-
-	<select id="listPage" resultType="com.gms.web.brd.Article">
-		 <![CDATA[
-		 select 
-		   bno, title, content, writer, regdate, viewcnt 
-		 from 
-		   tbl_board 
-		 where bno > 0 
-		 order by bno desc, regdate desc
-		 limit #{page}, 10
-		 ]]>
-	</select>
-
-	<select id="listCriteria" resultType="com.gms.web.brd.Article">
-		 <![CDATA[
-		 select 
-		   bno, title, content, writer, regdate, viewcnt 
-		 from 
-		   tbl_board 
-		 where bno > 0 
-		 order by bno desc, regdate desc
-		 limit #{pageStart}, #{perPageNum}
-		 ]]>
-	</select>
 
 
 
 	<select id="countPaging" resultType="int">
-		 <![CDATA[
-		 select 
-		   count(bno) 
-		 from 
-		   tbl_board 
-		 where 
-		   bno > 0 
-		 ]]>
+ <![CDATA[
+ select 
+   count(bno) 
+ from 
+   BOARD 
+ where 
+   bno > 0 
+ ]]>
 	</select>
 
-	<sql id="selectSome">
+
+
+	<sql id="search">
 		<if test="searchType != null">
 			<if test="searchType == 't'.toString()">
 				and title like CONCAT('%', #{keyword}, '%')
@@ -86,42 +92,82 @@
 				and writer like CONCAT('%', #{keyword}, '%')
 			</if>
 			<if test="searchType == 'tc'.toString()">
-				and ( title like CONCAT('%', #{keyword}, '%') OR content like
+				and ( title like CONCAT('%', #{keyword}, '%') OR content
+				like
 				CONCAT('%', #{keyword}, '%'))
 			</if>
 			<if test="searchType == 'cw'.toString()">
-				and ( content like CONCAT('%', #{keyword}, '%') OR writer like
+				and ( content like CONCAT('%', #{keyword}, '%') OR writer
+				like
 				CONCAT('%', #{keyword}, '%'))
 			</if>
 			<if test="searchType == 'tcw'.toString()">
 				and ( title like CONCAT('%', #{keyword}, '%')
 				OR
-				content like CONCAT('%', #{keyword}, '%')
+				content
+				like CONCAT('%', #{keyword}, '%')
 				OR
-				writer like CONCAT('%', #{keyword}, '%'))
+				writer like CONCAT('%',
+				#{keyword}, '%'))
 			</if>
 		</if>
 	</sql>
 
-	<select id="listSearch" resultType="com.gms.web.brd.Article">
-		<![CDATA[  
-		  select * 
-		  from tbl_board 
-		  where bno > 0 
-		]]>
-		<include refid="selectSome"></include>
-		<![CDATA[    
-		  order by bno desc
-		  limit #{pageStart}, #{perPageNum}
-		]]>
+	<select id="listSearch" resultType="com.gms.web.brd.Board">
+<![CDATA[  
+  select * 
+  from BOARD 
+  where bno > 0 
+]]>
+
+		<include refid="search"></include>
+  
+<![CDATA[    
+  order by bno desc
+  limit #{pageStart}, #{perPageNum}
+]]>
 	</select>
 
 	<select id="listSearchCount" resultType="int">
-		<![CDATA[  
-		  select count(bno) 
-		  from tbl_board 
-		  where bno > 0 
-		]]>
-		<include refid="selectSome"></include>
+<![CDATA[  
+  select count(bno) 
+  from BOARD 
+  where bno > 0 
+]]>
+		<include refid="search"></include>
+
 	</select>
+
+
+
+	<update id="updateReplyCnt">
+		update BOARD set replycnt = replycnt + #{amount} where bno = #{bno}
+	</update>
+
+
+	<update id="updateViewCnt">
+		update BOARD set viewcnt = viewcnt +1 where bno = #{bno}
+	</update>
+
+
+
+	<insert id="addAttach">
+		insert into tbl_attach(fullname, bno) values (#{fullName}, LAST_INSERT_ID())
+	</insert>
+
+
+	<select id="getAttach" resultType="string">
+		select fullname from tbl_attach where bno = #{bno} order by regdate
+	</select>
+
+
+	<delete id="deleteAttach">
+		delete from tbl_attach where bno = #{bno}
+	</delete>
+
+	<insert id="replaceAttach">
+		insert into tbl_attach(fullname, bno) values (#{fullName}, #{bno})
+	</insert>
+
+
 </mapper>

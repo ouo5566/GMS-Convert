@@ -54,10 +54,55 @@ var ui = {
 				.attr('for', x.id)
 				.text(x.txt);
 	},
-	btn : x=>{
+	btn : x=>{ //ui.btn({id : '', class : '', txt : ''})
 		return $('<button/>')
 				.attr({type : 'button', id : x.id})
-				.addClass('btn btn-'+x.clazz)
+				.addClass(x.clazz)
 				.html(x.txt);
+	},
+	tbl : x=>{ // ui.tbl({type : '', id : '', head : '', body : '', list : []})
+		let pn = ui.div({}).addClass('panel panel-' + x.type);
+		ui.div({}).addClass('panel-heading').html(x.head).appendTo(pn);
+		ui.div({}).addClass('panel-body').html(x.body).appendTo(pn);
+		
+		let t = $('<table/>').attr({id : x.id}).addClass(x.clazz);
+		let thead = $('<thead/>');
+		let tr = $('<tr/>');
+		$.each(x.list, (i, v)=>{
+			$('<th/>').html(v).appendTo(tr);
+		});
+		tr.appendTo(thead);
+		thead.appendTo(t);
+		$('<tbody/>').appendTo(t);
+		t.appendTo(pn);
+		
+		
+		/*
+		 
+		<div class="panel panel-default">
+		  <!-- Default panel contents -->
+		  <div class="panel-heading">Panel heading</div>
+		  <div class="panel-body">
+		    <p>...</p>
+		  </div>
+		
+		  <!-- Table -->
+		  <table class="table">
+		    ...
+		  </table>
+		</div>
+		 ==============================================
+		$.each(x.d, (i, v)=>{
+			let tr = $('<tr/>');
+			let tag = 'td';
+			if(i == 0){ tag = 'th'; }
+			$.each(v,(i, v)=>{
+				console.log(tag);
+				$('<'+tag+'/>').html(v).appendTo(tr);
+			});
+			tr.appendTo(t);
+		});
+		*/
+		return pn;
 	}
 }

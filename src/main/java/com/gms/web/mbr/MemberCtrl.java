@@ -30,8 +30,9 @@ public class MemberCtrl {
 	@PostMapping("/add")
 	public @ResponseBody Map<String, Object> add(@RequestBody Member p) {
 		Util.logger.accept("add() :: 넘어온 정보 :: "+p);
+		Util.logger.accept("add() :: 넘어온 정보 :: "+p.getSubject().toString());
 		Map<String, Object> r = new HashMap<>();
-		Once.getAnG.apply(p);
+		//Once.getAnG.apply(p);
 		Util.logger.accept(p.getAge()+"/"+p.getGender());
 		return r;
 	}

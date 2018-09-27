@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gms.web.rpl.ReplyMapper">
+
+	<select id="list" resultType="com.gms.web.rpl.Reply">
+		select
+		*
+		from
+		tbl_reply
+		where bno =
+		#{bno}
+		order by rno desc
+	</select>
+
+	<insert id="create">
+		insert into tbl_reply (bno, replytext, replyer)
+		values (#{bno},#{replytext},#{replyer})
+	</insert>
+
+	<update id="update">
+		update tbl_reply set replytext = #{replytext},
+		updatedate = now()
+		where rno = #{rno}
+	</update>
+
+	<delete id="delete">
+		delete from tbl_reply where rno =#{rno}
+	</delete>
+
+
+	<select id="listPage" resultType="com.gms.web.rpl.Reply">
+		select
+		*
+		from
+		tbl_reply
+		where
+		bno =
+		#{bno}
+		order by rno desc
+		limit #{cri.pageStart}, #{cri.perPageNum}
+	</select>
+
+	<select id="count" resultType="int">
+		select count(bno) from tbl_reply
+		where bno =#{bno}
+	</select>
+
+
+	<select id="getBno" resultType="int">
+		select bno from tbl_reply where rno = #{rno}
+	</select>
+
+</mapper>
+

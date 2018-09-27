@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
-@Component @Data @Lazy
+@Data
+@Component
+@Lazy
 public class Exam {
-	private String bno, title, content, writer, regdate, viewcnt;
+	String sbjSeq, exmSeq, term, score, memberId;
 }

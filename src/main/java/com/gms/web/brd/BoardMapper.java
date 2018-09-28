@@ -1,6 +1,7 @@
 package com.gms.web.brd;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -28,4 +29,9 @@ public interface BoardMapper {
   public List<String> getAttach(Integer bno);  
   public void deleteAttach(Integer bno);
   public void replaceAttach(String fullName, Integer bno);
+  
+  public int countAll();
+  public List<Board> listMyBoard(Map<String, Object> p);
+  public int listMyBoardCount(String keyword);
+  
 }

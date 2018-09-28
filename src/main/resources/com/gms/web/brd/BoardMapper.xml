@@ -31,6 +31,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE B.NUM BETWEEN #{beginRow} AND #{endRow}
 		ORDER BY B.NUM
 	</select>
+	
+	<select id="countAll" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			BOARD
+	</select>
+	
+	
 	<select id="listPage" resultType="com.gms.web.brd.Board">
  <![CDATA[
  select 
@@ -126,6 +135,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   order by bno desc
   limit #{pageStart}, #{perPageNum}
 ]]>
+	</select>
+
+	<select id="listMyBoard" resultType="com.gms.web.brd.Board">
+		  SELECT *
+		FROM (
+			SELECT
+				ROW_NUMBER() OVER(ORDER BY BNO DESC) AS NUM,
+				A.*
+			FROM
+				BOARD A
+		)B
+		WHERE B.NUM BETWEEN #{page.beginRow} AND #{page.endRow}
+		and writer like CONCAT('%', #{keyword}, '%')
+		ORDER BY B.NUM
+	</select>
+	<select id="listMyBoardCount" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			BOARD
+		WHERE writer like CONCAT('%', #{keyword}, '%')
 	</select>
 
 	<select id="listSearchCount" resultType="int">

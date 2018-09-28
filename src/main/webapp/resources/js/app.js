@@ -1,85 +1,8 @@
 "use strict" //에러가 나면 보여주겠다.
 var app = app || {};
+
+/*
 var user = user || {};
-
-/*app = (()=>{
-	var init = x=>{
-		
-		app.session.context(x);	
-		app.onCreate();
-	};
-	var onCreate = ()=>{
-		console.log('step 3');
-		app.setContentView();
-		
-		$('#login_btn').click(()=>{
-			location.href = app.x()+"/move/auth/member/login";
-		});
-		$('#add_btn').click(()=>{
-			location.href = app.x()+"/move/auth/member/add";
-		});
-		$('#login_form_btn').click(()=>{
-			$('#login-form')
-				.attr({ action : app.x()+"/member/login",
-						method : "POST"})
-				.submit();
-		});
-		$('#add_form_btn').click(()=>{
-			
-			var form = document.getElementById('join-form');
-			form.action = app.x() + "/member/add";
-			form.method = "post";	
-			form.submit();
-			
-			$('#join-form')
-				.attr({	action : app.x() + "/member/add",
-						method : "POST"	})
-				.submit(); // 메소드체이닝
-		});
-		$('#logout_btn').click(()=>{
-			location.href = app.x()+"/member/logout";
-		});
-		$('#retrieve_move').click(()=>{
-			location.href = app.x()+"/member/retrieve/"+app.session.getItem('memberId');
-		});
-		$('#update_move').click(()=>{
-			location.href = app.x()+"/move/login/member/modify";
-		});
-		$('#delete_move').click(()=>{
-			location.href = app.x()+"/move/login/member/remove";
-		});
-		$('#update_btn').click(()=>{
-			let id = $('<input type="hidden" name="memberId" value="'+$('#memberId').text()+'"/>');
-			$('#update-form')
-				.append(id)
-				.attr({ action : app.x() + "/member/modify",
-						method : "POST"})
-				.submit();
-		});
-		$('#delete_btn').click(()=>{
-			let id = $('<input type="hidden" name="memberId" value="'+$('#memberId').text()+'"/>');
-			$('#update-form')
-				.append(id)
-				.attr({ action : app.x() + "/member/remove",
-						method : "POST"})
-				.submit();
-		});
-		
-		$('#memberId').text(app.session.getItem('memberId'));
-		$('#name').text(app.session.getItem('name'));
-		$('#age').text(app.session.getItem('age'));
-		$('#ssn').text(app.session.getItem('ssn'));
-		$('#gender').text(app.session.getItem('gender'));
-		$('#teamId').val(app.session.getItem('teamId')).prop('selected',true);
-		$('#roll').val(app.session.getItem('roll')).prop('selected',true);
-		
-	};
-	var setContentView = ()=>{
-		console.log('step 4'+app.j());
-		
-	}
-})();*/
-
 user.session = x =>{
 	var s = '';
 	$.each(x, function(k, v){
@@ -87,7 +10,8 @@ user.session = x =>{
 		sessionStorage.setItem(k, v);
 	});
 	alert(s);
-}
+}*/
+
 app =(()=>{
 	var init =x=>{
 		//변수 초기화
@@ -134,40 +58,12 @@ app.board = (()=>{
 	};
 	var setContentView=()=>{
 		// list
-		$('#content').empty();
-		$.getJSON(ctx+'/boards/1',d=>{
-			$.getScript(script+'/compo.js',()=>{
-				// no, 제목, 내용, 작성자, 조회수
-				ui.tbl({
-					type : 'warning',
-					id : 'table',
-					clazz : 'table table-bordered',
-					head : 'PANEL-HEADING',
-					body : 'PANEL-BODY',
-					list : ['NO.', '제목', '내용', '작성자', '작성일', '조회수']
-				})
-				.appendTo($('#content'));
-				
-				$.each(d, (i, j)=>{
-					$('<tr/>')
-					.append(
-						$('<td/>').attr('width','5%').html(j.bno),
-						$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
-						$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
-						$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
-						$('<td/>').attr('width','10%').html(j.regdate),
-						$('<td/>').attr('width','5%').html(j.viewcnt)
-					)
-					.appendTo($('tbody'));
-				});
-			});
-		});
+		app.service.boards(1);
 	};
 	return{init:init};
 })();
 app.permission = (()=>{
 	var login =x=>{
-		console.log('LOGIN');
 		$.getScript($.script()+'/compo.js',()=>{
 			$.getScript($.script()+'/login.js',()=>{
 				$('#content').html(loginUI());
@@ -193,7 +89,13 @@ app.permission = (()=>{
 									$('<a/>').attr({href:"#"}).html('Retrieve').appendTo($('#mySidenav')).click(e=>{});
 									$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
 									$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
-									$('<a/>').attr({href:"#"}).html('Board').appendTo($('#mySidenav')).click(e=>{});
+									$('<a/>').attr({href:"#"}).html('MyBoard').appendTo($('#mySidenav')).click(e=>{
+										
+										app.service.my_board({
+											id : d.member.memberId,
+											pageNo : 1
+										});
+									});
 								}
 							},
 							error : (x,y,z)=>{console.log('error :: '+z)}
@@ -204,7 +106,6 @@ app.permission = (()=>{
 		});
 	};
 	var add =()=>{
-		console.log('ADD');
 		$.getScript($.script()+'/compo.js',()=>{
 			$.getScript($.script()+'/add.js', ()=>{
 				$('#content').html(addUI());
@@ -225,7 +126,6 @@ app.permission = (()=>{
 					for(let i of ckSub){
 						arr.push(i.value);
 					}
-					console.log("arr : " + arr);
 					
 					$.ajax({
 						url:$.ctx()+'/mbr/add',
@@ -252,7 +152,147 @@ app.permission = (()=>{
 		add:add
 		};
 })();
-
+app.service = {
+		boards : x=>{
+			$('#content').empty();
+			$.getJSON($.ctx()+'/boards/'+x,d=>{
+				$.getScript($.script()+'/compo.js',()=>{
+					// no, 제목, 내용, 작성자, 조회수
+					ui.tbl({
+						type : 'warning',
+						id : 'table',
+						clazz : 'table table-bordered',
+						head : 'PANEL-HEADING',
+						body : 'PANEL-BODY',
+						list : ['NO.', '제목', '내용', '작성자', '작성일', '조회수']
+					})
+					.appendTo($('#content'));
+					
+					$.each(d.list, (i, j)=>{
+						$('<tr/>')
+						.append(
+							$('<td/>').attr('width','5%').html(j.bno),
+							$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
+							$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
+							$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
+							$('<td/>').attr('width','10%').html(j.regdate),
+							$('<td/>').attr('width','5%').html(j.viewcnt)
+						)
+						.appendTo($('tbody'));
+					});
+					
+					ui.div({})
+					.addClass('text-center')
+					.append(ui.page({}))
+					.appendTo($('#content'));
+					
+					let z = d.page;
+					let ul = $('.pagination');
+					let prev = (z.prevPage)?'':'disabled';
+					let next = (z.nextPage)?'':'disabled';
+					let begin = z.beginPage - 1;
+					let end = z.endPage + 1;
+					for(let i=begin; i<=end;i++){
+						let c = (i == x) ? 'active' : 
+									(i == begin) ? prev : 
+										(i == end) ? next : '';
+						$('<li/>')
+						.addClass('page-item '+c)
+						.append(
+								$('<a/>')
+								.attr('style','cursor:pointer')
+								.addClass('page-link')
+								.html(
+										(i == begin)
+											? 'Prev' : (i == end)
+															? 'Next' : i
+									)
+						).appendTo(ul)
+						.click(function(e){
+							e.preventDefault();
+							if(i != begin && i != end){
+								$('li').removeClass('active');
+								$(this).addClass('active');
+							}
+							app.service.boards(i);
+						});
+						$('.disabled').off();
+					}
+				});
+			});
+		},
+		my_board : x=>{
+			$('#content').empty();
+			$.getJSON($.ctx()+'/boards/'+x.id+'/'+x.pageNo, d=>{
+				$.getScript($.script()+'/compo.js',()=>{
+					// no, 제목, 내용, 작성자, 조회수
+					ui.tbl({
+						type : 'warning',
+						id : 'table',
+						clazz : 'table table-bordered',
+						head : 'PANEL-HEADING',
+						body : 'PANEL-BODY',
+						list : ['NO.', '제목', '내용', '작성자', '작성일', '조회수']
+					})
+					.appendTo($('#content'));
+					
+					$.each(d.list, (i, j)=>{
+						$('<tr/>')
+						.append(
+							$('<td/>').attr('width','5%').html(j.bno),
+							$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
+							$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
+							$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
+							$('<td/>').attr('width','10%').html(j.regdate),
+							$('<td/>').attr('width','5%').html(j.viewcnt)
+						)
+						.appendTo($('tbody'));
+					});
+					
+					ui.div({})
+					.addClass('text-center')
+					.append(ui.page({}))
+					.appendTo($('#content'));
+					
+					let z = d.page;
+					let ul = $('.pagination');
+					let prev = (z.prevPage)?'':'disabled';
+					let next = (z.nextPage)?'':'disabled';
+					let begin = z.beginPage - 1;
+					let end = z.endPage + 1;
+					for(let i=begin; i<=end;i++){
+						let c = (i == x) ? 'active' : 
+									(i == begin) ? prev : 
+										(i == end) ? next : '';
+						$('<li/>')
+						.addClass('page-item '+c)
+						.append(
+								$('<a/>')
+								.attr('style','cursor:pointer')
+								.addClass('page-link')
+								.html(
+										(i == begin)
+											? 'Prev' : (i == end)
+															? 'Next' : i
+									)
+						).appendTo(ul)
+						.click(function(e){
+							e.preventDefault();
+							if(i != begin && i != end){
+								$('li').removeClass('active');
+								$(this).addClass('active');
+							}
+							app.service.my_board({
+								id : x.id ,
+								pageNo : i
+							});
+						});
+						$('.disabled').off("click");
+					}
+				});
+			});
+		}
+};
 app.router = {
 		init : x=>{
 			//alert('step 2 :: ' + x);

@@ -104,5 +104,49 @@ var ui = {
 		});
 		*/
 		return pn;
+	},
+	page : x=>{
+		return $('<ul/>').addClass('pagination');
+		
+		/*$('<li/>').addClass('page-item disabled').append($('<a/>').attr({href : '#'}).addClass('page-link').html('Prev')).appendTo(ul);
+		for(let i=1; i<=x.blockSize;i++){
+			let act = '';
+			if(i == 1) act = 'active';
+			$('<li/>')
+			.addClass('page-item '+act)
+			.append(
+					$('<a/>')
+					.attr({href : '#'})
+					.addClass('page-link')
+					.html(i)
+					)
+			.appendTo(ul)
+			.click(function(e){
+				e.preventDefault();
+				$('li').removeClass('active');
+				$(this).addClass('active');
+			});
+		}
+		$('<li/>').addClass('page-item').append($('<a/>').attr({href : '#'}).addClass('page-link').html('Next')).appendTo(ul);*/
+		
+		
+		/*<nav aria-label="...">
+		  <ul class="pagination">
+		    <li class="page-item disabled">
+		      <span class="page-link">Previous</span>
+		    </li>
+		    <li class="page-item"><a class="page-link" href="#">1</a></li>
+		    <li class="page-item active">
+		      <span class="page-link">
+		        2
+		        <span class="sr-only">(current)</span>
+		      </span>
+		    </li>
+		    <li class="page-item"><a class="page-link" href="#">3</a></li>
+		    <li class="page-item">
+		      <a class="page-link" href="#">Next</a>
+		    </li>
+		  </ul>
+		</nav>*/		
 	}
 }

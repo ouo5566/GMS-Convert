@@ -4,7 +4,6 @@ $.prototype.nullChecker = x=>{
 	let flag = false;
 	let i = 0;
 	for(i in x){
-		console.log(i+'번째 값 : '+x[i]);
 		if(x[i] === ''){
 			flag = true;
 		}

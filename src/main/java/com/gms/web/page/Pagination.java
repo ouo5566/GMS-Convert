@@ -17,21 +17,24 @@ public class Pagination implements Proxy{
 	
 	@Override
 	public void carryOut(Object o) {
-		this.pageNum = Integer.parseInt(o.toString());
-		this.pageSize = 5 ;
-		this.blockSize = 5 ;
-		//this.countRow = Integer.parseInt(map.get("countRow").toString());
-		//this.countPage = countRow / pageSize + ((countRow % pageSize == 0) ? 0 : 1 ); // 총 페이지
-		this.block = ( pageNum + (blockSize - 1) ) / blockSize ;
-		//int nextPage = ((countPage - block * blockSize > 0))? countPage - block * blockSize : 0 ,
-		//	prevPage = (countPage - ( nextPage + blockSize ) > 0)? countPage-( nextPage + blockSize ) : 0 ;
-		//this.nextPage = nextPage > 0 ;
-		//this.prevPage = prevPage > 0 ;
-		this.endRow = pageNum * pageSize;
-		this.beginRow = pageNum * pageSize - (pageSize - 1);
-		//this.endPage = ((countPage - nextPage) % blockSize == 0) ? block * blockSize : countPage ;
-		this.beginPage = block * blockSize - (blockSize - 1) ;
-		this.nextBlock = (this.nextPage) ? beginPage + blockSize : 0 ;
-		this.prevBlock = (this.prevPage) ? beginPage - blockSize : 0 ;
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) o;
+		pageNum = Integer.parseInt(map.get("pageNum").toString());
+		pageSize = 5 ;
+		blockSize = 5 ;
+		countRow = Integer.parseInt(map.get("countRow").toString());
+		countPage = countRow / pageSize + ((countRow % pageSize == 0) ? 0 : 1 ); // 총 페이지
+		block = ( pageNum + (blockSize - 1) ) / blockSize ;
+		int nextPage = ((countPage - block * blockSize > 0))? countPage - block * blockSize : 0 ,
+			prevPage = (countPage - ( nextPage + blockSize ) > 0)? countPage-( nextPage + blockSize ) : 0 ;
+		this.nextPage = nextPage > 0 ;
+		this.prevPage = prevPage > 0 ;
+		endRow = pageNum * pageSize;
+		beginRow = pageNum * pageSize - (pageSize - 1);
+		endPage = ((countPage - nextPage) % blockSize == 0) ? block * blockSize : countPage ;
+		beginPage = block * blockSize - (blockSize - 1) ;
+		nextBlock = (this.nextPage) ? beginPage + blockSize : 0 ;
+		prevBlock = (this.prevPage) ? beginPage - blockSize : 0 ;
+		// beginRow endRow prevPage prevBlock nextPage nextBlock
 	}
 }

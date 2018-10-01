@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,7 @@ import com.gms.web.page.Pagination;
 
 @RestController
 public class BoardCtrl {
-	@Autowired Board Board;
+	@Autowired Board board;
 	@Autowired BoardMapper brdMap;
 	@Autowired Pagination page;
 	@Autowired HashMap<String, Object> map;
@@ -48,5 +49,27 @@ public class BoardCtrl {
 		map.put("list", ls);
 		map.put("page", page);
 		return map;
+	}
+	@RequestMapping("/boards/new")
+	public void postBoard(@RequestBody Board b){
+		Util.logger.accept(":: BoardCtrl :: postBoard() ");
+		brdMap.create(b);
+	}
+	@RequestMapping("/boards/get/{num}")
+	public @ResponseBody Board getBoard(@PathVariable int num){
+		Util.logger.accept(":: BoardCtrl :: getBoard() ");
+		board = brdMap.read(num);
+		return board;
+	}
+	@RequestMapping("/boards/put")
+	public void putBoard(@RequestBody Board b){
+		Util.logger.accept(":: BoardCtrl :: putBoard() ");
+		System.out.println(b);
+		brdMap.update(b);
+	}
+	@RequestMapping("/boards/delete/{num}")
+	public void deleteBoard(@PathVariable int num){
+		Util.logger.accept(":: BoardCtrl :: deleteBoard() ");
+		brdMap.delete(num);
 	}
 }

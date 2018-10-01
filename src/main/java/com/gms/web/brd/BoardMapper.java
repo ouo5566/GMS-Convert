@@ -12,9 +12,7 @@ import com.gms.web.page.Pagination;
 
 @Repository
 public interface BoardMapper {
-  public void create(Board vo) ;
-  public Board read(Integer bno) ;
-  public void update(Board vo) ;
+  
   public void delete(Integer bno) ;
   public List<Board> listAll(Pagination p);
   public List<Board> listPage(int page) ;
@@ -30,8 +28,10 @@ public interface BoardMapper {
   public void deleteAttach(Integer bno);
   public void replaceAttach(String fullName, Integer bno);
   
+  public void create(Board vo) ;
+  public Board read(Integer bno) ;
+  public void update(Board vo) ;
   public int countAll();
   public List<Board> listMyBoard(Map<String, Object> p);
   public int listMyBoardCount(String keyword);
-  
 }

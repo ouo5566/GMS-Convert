@@ -12,8 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<select id="read" resultType="com.gms.web.brd.Board">
 		select
-		bno, title, content, writer,
-		regdate, viewcnt , replycnt
+		*
 		from
 		BOARD
 		where bno = #{bno}

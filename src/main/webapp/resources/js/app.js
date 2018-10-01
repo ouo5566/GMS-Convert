@@ -90,7 +90,6 @@ app.permission = (()=>{
 									$('<a/>').attr({href:"#"}).html('Update').appendTo($('#mySidenav')).click(e=>{});
 									$('<a/>').attr({href:"#"}).html('Delete').appendTo($('#mySidenav')).click(e=>{});
 									$('<a/>').attr({href:"#"}).html('MyBoard').appendTo($('#mySidenav')).click(e=>{
-										
 										app.service.my_board({
 											id : d.member.memberId,
 											pageNo : 1
@@ -172,7 +171,12 @@ app.service = {
 						$('<tr/>')
 						.append(
 							$('<td/>').attr('width','5%').html(j.bno),
-							$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
+							$('<td/>').attr('width','10%').html($('<a/>').html(j.title).click(e=>{
+								app.service.get({
+									page : x,
+									bno : j.bno	
+								});
+							})),
 							$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
 							$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
 							$('<td/>').attr('width','10%').html(j.regdate),
@@ -218,8 +222,21 @@ app.service = {
 						});
 						$('.disabled').off();
 					}
+					
+					$('<div/>')
+					.attr({id : 'btn-box'})
+					.appendTo($('#content .panel'));
+					$('<button/>')
+					.addClass('btn btn-secondary')
+					.html('WRITE')
+					.appendTo($('#btn-box'))
+					.click(e=>{
+						app.service.write(x);
+					});
 				});
 			});
+			
+			
 		},
 		my_board : x=>{
 			$('#content').empty();
@@ -241,7 +258,7 @@ app.service = {
 						.append(
 							$('<td/>').attr('width','5%').html(j.bno),
 							$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
-							$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
+							$('<td/>').attr('width','50%').html(j.content),
 							$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
 							$('<td/>').attr('width','10%').html(j.regdate),
 							$('<td/>').attr('width','5%').html(j.viewcnt)
@@ -289,8 +306,121 @@ app.service = {
 						});
 						$('.disabled').off("click");
 					}
+					
+					
+					
 				});
 			});
+		},
+		write : x=>{
+			$.getScript($.script()+'/writer.js',()=>{
+				$('.panel-heading').empty().html('WRITE');
+				$('#table').remove();
+				$('#content div.text-center').remove();
+				$('.panel-body').html(writerUI());
+				$('#btn-box').empty();
+				$('<button/>')
+				.addClass('btn btn-secondary')
+				.html('NEW')
+				.appendTo($('#btn-box'))
+				.click(e=>{
+					app.service.write(x);
+				});
+				$('<button/>')
+				.addClass('btn btn-warning')
+				.html('CANCLE')
+				.appendTo($('#btn-box'))
+				.click(e=>{
+					app.service.boards(x);
+				});
+				$('<button/>')
+				.addClass('btn btn-primary')
+				.html('SUBMIT')
+				.appendTo($('#btn-box'))
+				.click(e=>{
+					$.ajax({
+						url : $.ctx()+'/boards/new',
+						method : 'POST',
+						contentType : 'application/json',
+						data : JSON.stringify({
+							title : $('#title').val(),
+							content : $('#ctn').val(),
+							writer : $('#writer').val()
+						}),
+						success : d=>{
+							app.service.boards(1);
+						},
+						error : (x,y,z)=>{}
+					});
+				});
+			})
+		},
+		get : x=>{
+			$.getScript($.script()+'/reader.js',()=>{
+				$.getJSON($.ctx()+'/boards/get/'+x.bno, d=>{
+					$('.panel-heading').empty().html(d.bno);
+					$('#table').remove();
+					$('#content div.text-center').remove();
+					$('.panel-body').html(readerUI());
+					$('#title').html(d.title);
+					$('#cnt').html(d.content);
+					$('#writer').html(d.writer);
+					$('#btn-box')
+					.empty()
+					.append(
+						$('<button/>').addClass('btn btn-secondary').html('WRITE').appendTo($('#btn-box'))
+						.click(e=>{
+							app.service.write(x.page);
+						}),	
+						$('<button/>').addClass('btn btn-warning').html('MODIFY')
+						.click(e=>{
+							$.getScript($.script()+'/modify.js',()=>{
+								$('.panel-body').html(modifyUI());
+								$('#title').attr('value',d.title);
+								$('#ctn').html(d.content);
+								$('#writer').html(d.writer);
+								$('#btn-box').empty();
+								$('<button/>').addClass('btn btn-primary').html('SAVE').appendTo($('#btn-box'))
+								.click(e=>{
+									$.ajax({
+										url : $.ctx()+'/boards/put',
+										method : 'post',
+										contentType : 'application/json',
+										data : JSON.stringify({
+											bno : d.bno,
+											title : $('#title').val(),
+											content : $('#ctn').val()
+										}),
+										success : d=>{
+											app.service.get(x);
+										},
+										error : (x,y,z)=>{}
+									});
+								}),
+								$('<button/>')
+								.addClass('btn btn-warning')
+								.html('CANCLE')
+								.appendTo($('#btn-box'))
+								.click(e=>{
+									app.service.get(x);
+								});
+							})
+						}),
+						$('<button/>').addClass('btn btn-danger').html('REMOVE')
+						.click(e=>{
+							let conf = confirm("게시글을 삭제합니다.");
+							if(conf == true){
+								$.getJSON($.ctx()+'/boards/delete/'+x.bno);
+								app.service.boards(x.page);
+							}
+						}),
+						$('<button/>').addClass('btn btn-primary').html('LIST')
+						.click(e=>{
+							app.service.boards(x.page);
+						})
+					);
+				})
+			})
 		}
 };
 app.router = {

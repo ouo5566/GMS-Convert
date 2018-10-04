@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.gms.web.cmm.CommonMapper">
+	<resultMap type="com.gms.web.brd.Attach" id="attach">
+		<id property="seq" column="SEQ"/>
+		<result property="name" column="NAME"/>
+		<result property="title" column="TITLE"/>
+		<result property="content" column="CONTENT"/>
+	</resultMap>
+	<resultMap type="java.util.HashMap" id="boardDetail">
+		<id property="bno" column="BNO"/>
+		<result property="title" column="TITLE"/>
+		<result property="content" column="CONTENT"/>
+		<result property="writer" column="WRITER"/>
+		<result property="regdate" column="REGDATE"/>
+		<result property="viewcnt" column="VIEWCNT"/>
+		<result property="replycnt" column="REPLYCNT"/>
+		<association property="mbr" javaType="Member" select="get">
+			<id property="memberId" column="MEMBER_ID"/>
+			<result property="teamId" column="TEAM_ID"/>
+			<result property="name" column="NAME"/>
+			<result property="ssn" column="SSN"/>
+			<result property="roll" column="ROLL"/>
+			<result property="pw" column="PW"/>
+			<result property="age" column="AGE"/>
+			<result property="gender" column="GENDER"/>
+		</association>
+		<collection property="attachs" ofType="attach">
+			<id property="seq" column="SEQ"/>
+			<result property="name" column="NAME"/>
+			<result property="title" column="TITLE"/>
+			<result property="content" column="CONTENT"/>
+		</collection>
+	</resultMap>
+	<resultMap type="map" id="info">
+		<id property="seq" column="SEQ"/>
+		<result property="name" column="NAME"/>
+		<result property="title" column="TITLE"/>
+		<result property="content" column="CONTENT"/>
+		<result property="teamId" column="TEAM_ID"/>
+		<result property="name" column="NAME"/>
+		<result property="ssn" column="SSN"/>
+		<result property="roll" column="ROLL"/>
+		<result property="pw" column="PW"/>
+		<result property="age" column="AGE"/>
+		<result property="gender" column="GENDER"/>
+		<result property="attachSeq" column="ATTACH_SEQ"/>
+	</resultMap>
+ </mapper>

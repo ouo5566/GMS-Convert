@@ -3,7 +3,17 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gms.web.mbr.MemberMapper">
-	<select id="get" resultType="com.gms.web.mbr.Member">
+	<resultMap type="com.gms.web.mbr.Member" id="mbr">
+		<id property="memberId" column="MEMBER_ID"/>
+		<result property="teamId" column="TEAM_ID"/>
+		<result property="name" column="NAME"/>
+		<result property="ssn" column="SSN"/>
+		<result property="roll" column="ROLL"/>
+		<result property="pw" column="PW"/>
+		<result property="age" column="AGE"/>
+		<result property="gender" column="GENDER"/>
+	</resultMap>
+	<select id="get" resultType="mbr">
 	    SELECT
 	    MEMBER_ID memberId,
 	    TEAM_ID teamId,

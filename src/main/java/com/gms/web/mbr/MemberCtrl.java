@@ -93,6 +93,7 @@ public class MemberCtrl {
 		r.put("flag", flag);
 		r.put("member", mbr);
 		
+		System.out.println(mbr);
 		/*
 		Predicate<String> l = s -> s.equals("login_success");
 		if(l.test(view)) {

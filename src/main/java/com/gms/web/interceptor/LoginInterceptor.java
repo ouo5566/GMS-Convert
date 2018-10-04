@@ -14,6 +14,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.gms.web.cmm.Util;
+
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
   private static final String LOGIN = "login";
@@ -25,7 +27,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
   public void postHandle(HttpServletRequest request, 
       HttpServletResponse response, Object handler,
       ModelAndView modelAndView) throws Exception {
-
+	  Util.logger.accept("인터셉터 성공");
     HttpSession session = request.getSession();
 
     ModelMap modelMap = modelAndView.getModelMap();

@@ -30,6 +30,5 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="C:/Users/1027/sts-3.9.5/lombok.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

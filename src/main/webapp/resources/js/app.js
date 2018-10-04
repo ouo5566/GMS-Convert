@@ -81,6 +81,9 @@ app.permission = (()=>{
 								$('#msg').remove();
 								$('<p/>').attr('id','msg').html(d.flag).appendTo($('#login-box'));
 								if(d.flag === 'login_success'){
+									
+									$.cookie("loginID", d.member.memberId);
+									
 									$('#content').empty();
 									$('#mySidenav').empty();
 									$('<a/>').attr({href:"#"}).html('Logout').appendTo($('#mySidenav')).click(e=>{
@@ -177,7 +180,7 @@ app.service = {
 									bno : j.bno	
 								});
 							})),
-							$('<td/>').attr('width','50%').html($('<a/>').html(j.content)),
+							$('<td/>').attr('width','50%').html(j.content),
 							$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
 							$('<td/>').attr('width','10%').html(j.regdate),
 							$('<td/>').attr('width','5%').html(j.viewcnt)
@@ -223,16 +226,6 @@ app.service = {
 						$('.disabled').off();
 					}
 					
-					$('<div/>')
-					.attr({id : 'btn-box'})
-					.appendTo($('#content .panel'));
-					$('<button/>')
-					.addClass('btn btn-secondary')
-					.html('WRITE')
-					.appendTo($('#btn-box'))
-					.click(e=>{
-						app.service.write(x);
-					});
 				});
 			});
 			
@@ -257,7 +250,12 @@ app.service = {
 						$('<tr/>')
 						.append(
 							$('<td/>').attr('width','5%').html(j.bno),
-							$('<td/>').attr('width','10%').html($('<a/>').html(j.title)),
+							$('<td/>').attr('width','10%').html($('<a/>').html(j.title).click(e=>{
+								app.service.get({
+									page : x,
+									bno : j.bno	
+								});
+							})),
 							$('<td/>').attr('width','50%').html(j.content),
 							$('<td/>').attr('width','10%').html($('<a/>').html(j.writer)),
 							$('<td/>').attr('width','10%').html(j.regdate),
@@ -307,7 +305,16 @@ app.service = {
 						$('.disabled').off("click");
 					}
 					
-					
+					$('<div/>')
+					.attr({id : 'btn-box'})
+					.appendTo($('#content .panel'));
+					$('<button/>')
+					.addClass('btn btn-secondary')
+					.html('WRITE')
+					.appendTo($('#btn-box'))
+					.click(e=>{
+						app.service.write(x);
+					});
 					
 				});
 			});
@@ -331,7 +338,7 @@ app.service = {
 				.html('CANCLE')
 				.appendTo($('#btn-box'))
 				.click(e=>{
-					app.service.boards(x);
+					app.service.my_board(x);
 				});
 				$('<button/>')
 				.addClass('btn btn-primary')
@@ -345,13 +352,31 @@ app.service = {
 						data : JSON.stringify({
 							title : $('#title').val(),
 							content : $('#ctn').val(),
-							writer : $('#writer').val()
+							writer : $('#writer').text()
 						}),
 						success : d=>{
-							app.service.boards(1);
+							app.service.my_board({x});
 						},
 						error : (x,y,z)=>{}
 					});
+				});
+				$('<form id="frm" action="uploadForm" method="post" enctype="multipart/form-data">'
+						+'<input type="file" name="file">'
+						+'<input type="submit"> </form>')
+				.appendTo($('#btn-box'))
+				.click(e=>{
+				    $.ajax({
+				        url:$.ctx()+'/boards/fileupload',
+				        type:'POST',
+				        data:new FormData($('#frm')),
+				        async:false,
+				        cache:false,
+				        contentType:false,
+				        processData:false
+				    }).done(function(response){
+				        alert(response);
+				    });
+
 				});
 			})
 		},
@@ -460,6 +485,40 @@ app.router = {
 				$('#board_btn').click(e=>{
 					app.board.init();
 				})
+				$('<a/>')
+				.html('DnD')
+				.appendTo($('#mySidenav'))
+				.click(e=>{
+					$('#content').html(
+						'<h3>Ajax File Upload</h3>'
+							+ '<div class="fileDrop"></div>'
+							+ '<div class="uploadedList"></div>'
+					);
+					$('.fileDrop')
+					.attr('style','width:100%; height:200px; border:1px dotted blue;')
+					.on("dragenter dragover",e=>{
+						e.preventDefault();
+					});
+					$('.fileDrop').on("drop",e=>{
+						e.preventDefault();
+						var files = e.originalEvent.dataTransfer.files;
+						var file = files[0];
+						//console.log(file);
+						var formData = new FormData();
+						formData.append("file",file);
+						$.ajax({
+							url : $.ctx()+'/uploadAjax',
+							data : formData,
+							dataType : 'text',
+							processData : false,
+							contentType : false,
+							type : 'post',
+							success : d=>{
+								alert('file upload success :: '+d);
+							}
+						});
+					});
+				});
 			}).fail(x=>{console.log('step 4 실패')})
 		}
 	};
